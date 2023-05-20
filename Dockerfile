@@ -1,19 +1,16 @@
-FROM ubuntu:16.04
+FROM python:3.9-slim
 
-FROM python:3.6.5
+RUN apt-get update && apt-get install -y git
 
-RUN apt-get update -y && \
-    apt-get install -y python-pip python-dev
-
-# We copy just the requirements.txt first to leverage Docker cache
-COPY ./requirements.txt /app/requirements.txt
-
+# Create the app directory
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+# Copy the requirements file and install dependencies
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app
+# Copy the rest of the application code
+COPY . /app/
 
-CMD python /app/model.py && python /app/server.py
-
- 
+# Set the command to run when the container starts
+CMD ["python", "/app/model.py"]
